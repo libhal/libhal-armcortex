@@ -76,38 +76,31 @@ systick_timer::~systick_timer()
   cortex_m::interrupt(event_number).disable();
 }
 
-result<systick_timer::is_running_t> systick_timer::driver_is_running()
+bool systick_timer::driver_is_running()
 {
   auto running_bit = static_cast<bool>(
     hal::bit_extract<systick_control_register::enable_counter>(
       sys_tick->control));
-  return is_running_t{ .is_running = running_bit };
+  return running_bit;
 }
 
-result<systick_timer::cancel_t> systick_timer::driver_cancel()
+void systick_timer::driver_cancel()
 {
   // All that is needed is to stop the timer. When the timer is started again
   // via `schedule()`, the timer value will be reloaded/reset.
   stop();
-  return cancel_t{};
 }
 
-result<systick_timer::schedule_t> systick_timer::driver_schedule(
-  hal::callback<void(void)> p_callback,
-  hal::time_duration p_delay)
+void systick_timer::driver_schedule(hal::callback<void(void)> p_callback,
+                                    hal::time_duration p_delay)
 {
-  static constexpr std::int64_t maximum = 0x00FFFFFF;
+  constexpr std::int64_t maximum = 0x00FFFFFF;
 
   auto cycle_count = cycles_per(m_frequency, p_delay);
   if (cycle_count <= 1) {
     cycle_count = 1;
   } else if (cycle_count > maximum) {
-    auto tick_period = wavelength<std::nano>(m_frequency);
-    auto max_duration = HAL_CHECK(duration_from_cycles(m_frequency, maximum));
-    return hal::new_error(out_of_bounds_error{
-      .tick_period = tick_period,
-      .maximum = max_duration,
-    });
+    throw std::errc::invalid_argument;
   }
 
   // Stop the previously scheduled event
@@ -127,7 +120,5 @@ result<systick_timer::schedule_t> systick_timer::driver_schedule(
 
   // Starting the timer will restart the count
   start();
-
-  return schedule_t{};
 }
 }  // namespace hal::cortex_m

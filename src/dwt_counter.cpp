@@ -35,13 +35,13 @@ void dwt_counter::register_cpu_frequency(hertz p_cpu_frequency)
   m_cpu_frequency = p_cpu_frequency;
 }
 
-dwt_counter::uptime_t dwt_counter::driver_uptime()
+std::uint64_t dwt_counter::driver_uptime()
 {
-  return uptime_t{ .ticks = m_uptime.update(dwt->cyccnt) };
+  return m_uptime.update(dwt->cyccnt);
 }
 
-dwt_counter::frequency_t dwt_counter::driver_frequency()
+hal::hertz dwt_counter::driver_frequency()
 {
-  return frequency_t{ .operating_frequency = m_cpu_frequency };
+  return m_cpu_frequency;
 }
 }  // namespace hal::cortex_m
