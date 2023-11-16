@@ -26,7 +26,6 @@ required_conan_version = ">=2.0.6"
 
 class libhal_arm_cortex_conan(ConanFile):
     name = "libhal-armcortex"
-    version = "2.2.1"
     license = "Apache-2.0"
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://libhal.github.io/libhal-armcortex"
@@ -67,8 +66,8 @@ class libhal_arm_cortex_conan(ConanFile):
         self.test_requires("boost-ext-ut/1.1.9")
 
     def requirements(self):
-        self.requires("libhal/[^2.0.3]", transitive_headers=True)
-        self.requires("libhal-util/[^3.0.1]")
+        self.requires("libhal/3.0.0-alpha.2", transitive_headers=True)
+        self.requires("libhal-util/4.0.0-alpha.1")
 
     def layout(self):
         cmake_layout(self)
@@ -109,9 +108,7 @@ class libhal_arm_cortex_conan(ConanFile):
         if (
             self._bare_metal and
             self.settings.compiler == "gcc" and
-            (self.settings.arch == "thumbv6" or
-             self.settings.arch == "thumbv7" or
-             self.settings.arch == "thumbv8")
+            "cortex-" in str(self.settings.arch)
         ):
             linker_path = os.path.join(self.package_folder, "linker_scripts")
             self.cpp_info.exelinkflags.append("-L" + linker_path)
