@@ -66,8 +66,8 @@ class libhal_arm_cortex_conan(ConanFile):
         self.test_requires("boost-ext-ut/1.1.9")
 
     def requirements(self):
-        self.requires("libhal/3.0.0-alpha.2", transitive_headers=True)
-        self.requires("libhal-util/4.0.0-alpha.1")
+        self.requires("libhal/[^3.0.0]", transitive_headers=True)
+        self.requires("libhal-util/[^4.0.0]")
 
     def layout(self):
         cmake_layout(self)
