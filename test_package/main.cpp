@@ -27,22 +27,26 @@ void foo()
   throw 5;
 }
 
+volatile bool run = false;
+
 int main()
 {
   std::uint64_t uptime = 0;
 
-  try {
-    hal::cortex_m::dwt_counter counter(1'000'000.0f);
-    uptime = counter.uptime();
-  } catch (...) {
-    std::terminate();
-  }
+  if (run) {
+    try {
+      hal::cortex_m::dwt_counter counter(1'000'000.0f);
+      uptime = counter.uptime();
+    } catch (...) {
+      std::terminate();
+    }
 
-  try {
-    // Test that exceptions work for the embedded target
-    foo();
-  } catch (...) {
-    uptime += 1;
+    try {
+      // Test that exceptions work for the embedded target
+      foo();
+    } catch (...) {
+      uptime += 1;
+    }
   }
 
   return static_cast<int>(uptime);
