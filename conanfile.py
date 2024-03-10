@@ -33,12 +33,30 @@ class libhal_arm_cortex_conan(ConanFile):
               "cortex-m23", "cortex-m55", "cortex-m35p", "cortex-m33")
     settings = "compiler", "build_type", "os", "arch"
 
-    python_requires = "libhal-bootstrap/[^0.0.4]"
+    python_requires = "libhal-bootstrap/[^0.0.6]"
     python_requires_extend = "libhal-bootstrap.library"
+
+    options = {
+        "use_libhal_exceptions": [True, False],
+        "use_picolibc": [True, False],
+    }
+
+    default_options = {
+        "use_libhal_exceptions": True,
+        "use_picolibc": True,
+    }
 
     def requirements(self):
         bootstrap = self.python_requires["libhal-bootstrap"]
         bootstrap.module.add_library_requirements(self)
+
+        if self.settings.os == "baremetal" and self.settings.compiler == "gcc":
+            if self.options.use_libhal_exceptions:
+                self.requires(
+                    "libhal-exceptions/[^0.0.2]", transitive_headers=True)
+            if self.options.use_picolibc:
+                compiler_version = str(self.settings.compiler.version)
+                self.requires("prebuilt-picolibc/" + compiler_version)
 
     def package_info(self):
         self.cpp_info.libs = ["libhal-armcortex"]
@@ -52,3 +70,7 @@ class libhal_arm_cortex_conan(ConanFile):
         ):
             linker_path = os.path.join(self.package_folder, "linker_scripts")
             self.cpp_info.exelinkflags.append("-L" + linker_path)
+
+    def package_id(self):
+        del self.info.options.use_picolibc
+        del self.info.options.use_libhal_exceptions
