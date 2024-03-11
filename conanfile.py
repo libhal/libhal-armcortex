@@ -33,7 +33,7 @@ class libhal_arm_cortex_conan(ConanFile):
               "cortex-m23", "cortex-m55", "cortex-m35p", "cortex-m33")
     settings = "compiler", "build_type", "os", "arch"
 
-    python_requires = "libhal-bootstrap/[^0.0.6]"
+    python_requires = "libhal-bootstrap/[^1.0.0]"
     python_requires_extend = "libhal-bootstrap.library"
 
     options = {
@@ -53,7 +53,7 @@ class libhal_arm_cortex_conan(ConanFile):
         if self.settings.os == "baremetal" and self.settings.compiler == "gcc":
             if self.options.use_libhal_exceptions:
                 self.requires(
-                    "libhal-exceptions/[^0.0.2]", transitive_headers=True)
+                    "libhal-exceptions/[^1.0.0]", transitive_headers=True)
             if self.options.use_picolibc:
                 compiler_version = str(self.settings.compiler.version)
                 self.requires("prebuilt-picolibc/" + compiler_version)
