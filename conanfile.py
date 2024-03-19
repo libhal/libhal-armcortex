@@ -24,7 +24,6 @@ required_conan_version = ">=2.0.14"
 class libhal_arm_cortex_conan(ConanFile):
     name = "libhal-armcortex"
     license = "Apache-2.0"
-    url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://libhal.github.io/libhal-armcortex"
     description = ("A collection of drivers and libraries for the Cortex M "
                    "series ARM processors using libhal")
