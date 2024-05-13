@@ -32,7 +32,7 @@ class libhal_arm_cortex_conan(ConanFile):
               "cortex-m23", "cortex-m55", "cortex-m35p", "cortex-m33")
     settings = "compiler", "build_type", "os", "arch"
 
-    python_requires = "libhal-bootstrap/[^1.0.0]"
+    python_requires = "libhal-bootstrap/[^2.0.0]"
     python_requires_extend = "libhal-bootstrap.library"
 
     options = {
