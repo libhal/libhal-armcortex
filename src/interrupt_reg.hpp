@@ -53,4 +53,7 @@ struct nvic_register_t
 inline constexpr intptr_t nvic_address = 0xE000'E100UL;
 
 inline auto* nvic = reinterpret_cast<nvic_register_t*>(nvic_address);
+
+/// Place holder interrupt that performs no work
+void nop();
 }  // namespace hal::cortex_m

@@ -20,6 +20,7 @@
 #include <libhal-util/bit.hpp>
 #include <libhal-util/static_callable.hpp>
 #include <libhal-util/units.hpp>
+#include <libhal/error.hpp>
 #include <libhal/functional.hpp>
 
 #include "systick_timer_reg.hpp"
@@ -41,6 +42,9 @@ void stop()
 systick_timer::systick_timer(hertz p_frequency, clock_source p_source)
   : m_frequency(p_frequency)
 {
+  if (not interrupt_vector_table_initialized()) {
+    hal::safe_throw(hal::operation_not_permitted(this));
+  }
   register_cpu_frequency(p_frequency, p_source);
 }
 
@@ -73,7 +77,7 @@ void systick_timer::register_cpu_frequency(hertz p_frequency,
 systick_timer::~systick_timer()
 {
   stop();
-  cortex_m::interrupt(event_number).disable();
+  disable_interrupt(event_number);
 }
 
 bool systick_timer::driver_is_running()
@@ -113,7 +117,7 @@ void systick_timer::driver_schedule(hal::callback<void(void)> p_callback,
 
   // Enable interrupt service routine for SysTick and use this callback as the
   // handler
-  cortex_m::interrupt(event_number).enable(handler.get_handler());
+  enable_interrupt(event_number, handler.get_handler());
 
   sys_tick->current_value = 0;
   sys_tick->reload = static_cast<uint32_t>(cycle_count);

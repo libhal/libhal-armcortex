@@ -14,11 +14,10 @@
 
 #include <libhal-armcortex/systick_timer.hpp>
 
+#include <libhal-armcortex/interrupt.hpp>
 #include <libhal/units.hpp>
 
 #include "helper.hpp"
-#include "interrupt_reg.hpp"
-#include "system_controller_reg.hpp"
 #include "systick_timer_reg.hpp"
 
 #include <boost/ut.hpp>
@@ -30,9 +29,9 @@ void systick_timer_test()
   using namespace std::chrono_literals;
   using namespace hal::literals;
 
+  auto saved_registers = setup_interrupts_for_unit_testing();
   auto stub_out_sys_tick = stub_out_registers(&sys_tick);
-  auto stub_out_nvic = stub_out_registers(&nvic);
-  auto stub_out_scb = stub_out_registers(&scb);
+  initialize_interrupts<1>();
   systick_timer test_subject(1.0_MHz);
 
   should("systick_timer::systick_timer()") = [&] {

@@ -51,6 +51,8 @@ public:
    *
    * @param p_frequency - the clock source's frequency
    * @param p_source - the source of the clock to the systick timer
+   * @throws hal::operation_not_permitted - thrown when the precondition to
+   * initialize the interrupt vector table before constructing this object.
    */
   systick_timer(hertz p_frequency,
                 clock_source p_source = clock_source::processor);

@@ -15,125 +15,209 @@
 #include <libhal-armcortex/interrupt.hpp>
 
 #include <algorithm>
-#include <array>
 #include <cstdint>
 #include <span>
-#include <utility>
 
 #include <libhal-armcortex/system_control.hpp>
+#include <libhal-util/enum.hpp>
 
 #include "interrupt_reg.hpp"
 
 namespace hal::cortex_m {
-
 namespace {
 /// Pointer to a statically allocated interrupt vector table
 std::span<interrupt_pointer> vector_table{};
-}  // namespace
 
-bool vector_table_is_initialized()
+std::int32_t register_index(irq_t p_irq)
 {
-  return get_interrupt_vector_table_address() == vector_table.data();
+  constexpr irq_t register_width = 32;
+  return p_irq / register_width;
 }
 
-/// Place holder interrupt that performs no work
-void interrupt::nop()
+void nvic_enable_irq(irq_t p_irq)
+{
+  auto* interrupt_enable = &nvic->iser[register_index(p_irq)];
+  *interrupt_enable = 1 << p_irq;
+}
+
+void nvic_disable_irq(irq_t p_irq)
+{
+  auto* interrupt_clear = &nvic->icer[register_index(p_irq)];
+  *interrupt_clear = 1 << p_irq;
+}
+
+void setup_default_vector_table(std::span<interrupt_pointer> p_vector_table)
+{
+  // Move vector span table forward so the negative irq numbers reach the
+  // correct array elements.
+  p_vector_table = p_vector_table.subspan(-core_interrupts);
+
+  auto* table_reg = get_interrupt_vector_table_address();
+  auto* original_stack = reinterpret_cast<interrupt_pointer*>(table_reg)[0];
+  auto* original_reset = reinterpret_cast<interrupt_pointer*>(table_reg)[1];
+
+  p_vector_table[hal::value(irq::top_of_stack)] = original_stack;
+  p_vector_table[hal::value(irq::reset)] = original_reset;
+  p_vector_table[hal::value(irq::non_maskable_interrupt)] =
+    default_interrupt_handler;
+  p_vector_table[hal::value(irq::hard_fault)] = hard_fault_handler;
+  p_vector_table[hal::value(irq::memory_management_fault)] =
+    memory_management_fault_handler;
+  p_vector_table[hal::value(irq::bus_fault)] = bus_fault_handler;
+  p_vector_table[hal::value(irq::usage_fault)] = usage_fault_handler;
+  p_vector_table[hal::value(irq::reserve7)] = default_interrupt_handler;
+  p_vector_table[hal::value(irq::reserve8)] = default_interrupt_handler;
+  p_vector_table[hal::value(irq::reserve9)] = default_interrupt_handler;
+  p_vector_table[hal::value(irq::reserve10)] = default_interrupt_handler;
+  p_vector_table[hal::value(irq::software_call)] = default_interrupt_handler;
+  p_vector_table[hal::value(irq::reserve12)] = default_interrupt_handler;
+  p_vector_table[hal::value(irq::reserve13)] = default_interrupt_handler;
+  p_vector_table[hal::value(irq::pend_sv)] = default_interrupt_handler;
+  p_vector_table[hal::value(irq::systick)] = default_interrupt_handler;
+
+  // Fill the interrupt handler and vector table with a function that does
+  // nothing functions.
+  std::fill(
+    p_vector_table.begin(), p_vector_table.end(), &default_interrupt_handler);
+}
+
+constexpr bool is_the_same_vector_buffer(
+  std::span<interrupt_pointer> p_vector_table)
+{
+  p_vector_table = p_vector_table.subspan(core_interrupts);
+  return (p_vector_table.data() == vector_table.data() &&
+          p_vector_table.size() == vector_table.size());
+}
+
+bool is_valid_irq_request(irq_t p_irq)
+{
+  if (not interrupt_vector_table_initialized()) {
+    return false;
+  }
+
+  bool within_bounds = hal::value(irq::top_of_stack) <= p_irq &&
+                       p_irq <= static_cast<irq_t>(vector_table.size());
+
+  if (not within_bounds) {
+    return false;
+  }
+
+  return true;
+}
+}  // namespace
+
+void default_interrupt_handler()
 {
   while (true) {
     continue;
   }
 }
 
-bool is_valid_irq_request(const interrupt::exception_number& p_id)
+void hard_fault_handler()
 {
-  if (!vector_table_is_initialized()) {
-    return false;
+  while (true) {
+    continue;
   }
-
-  if (!p_id.is_valid()) {
-    return false;
-  }
-
-  if (p_id.vector_index() > vector_table.size()) {
-    return false;
-  }
-
-  return true;
 }
 
-void nvic_enable_irq(const interrupt::exception_number& p_id)
+void memory_management_fault_handler()
 {
-  auto* interrupt_enable = &nvic->iser[p_id.register_index()];
-  *interrupt_enable = p_id.enable_mask();
+  while (true) {
+    continue;
+  }
 }
 
-void nvic_disable_irq(const interrupt::exception_number& p_id)
+void bus_fault_handler()
 {
-  auto* interrupt_clear = &nvic->icer[p_id.register_index()];
-  *interrupt_clear = p_id.enable_mask();
+  while (true) {
+    continue;
+  }
 }
 
-const std::span<interrupt_pointer> interrupt::get_vector_table()
+void usage_fault_handler()
+{
+  while (true) {
+    continue;
+  }
+}
+
+void disable_all_interrupts()
+{
+#if defined(__arm__)
+  asm volatile("cpsid i" : : : "memory");
+#endif
+}
+
+void enable_all_interrupts()
+{
+#if defined(__arm__)
+  asm volatile("cpsie i" : : : "memory");
+#endif
+}
+
+bool interrupt_vector_table_initialized()
+{
+  return get_interrupt_vector_table_address() ==
+         (vector_table.data() + core_interrupts);
+}
+
+const std::span<interrupt_pointer> get_vector_table()
 {
   return vector_table;
 }
 
-interrupt::interrupt(exception_number p_id)
-  : m_id(p_id)
+void enable_interrupt(irq_t p_irq, interrupt_pointer p_handler)
 {
-}
-
-void interrupt::enable(interrupt_pointer p_handler)
-{
-  if (!is_valid_irq_request(m_id)) {
+  if (not is_valid_irq_request(p_irq)) {
     return;
   }
 
-  vector_table[m_id.vector_index()] = p_handler;
+  vector_table[p_irq] = p_handler;
 
-  if (!m_id.default_enabled()) {
-    nvic_enable_irq(m_id);
+  if (p_irq >= 0) {
+    nvic_enable_irq(p_irq);
   }
 }
 
-void interrupt::disable()
+void disable_interrupt(irq_t p_irq)
 {
-  if (!is_valid_irq_request(m_id)) {
+  if (!is_valid_irq_request(p_irq)) {
     return;
   }
 
-  vector_table[m_id.vector_index()] = nop;
-
-  if (!m_id.default_enabled()) {
-    nvic_disable_irq(m_id);
+  if (p_irq < 0) {
+    return;
   }
+
+  nvic_disable_irq(p_irq);
 }
 
-bool interrupt::verify_vector_enabled(interrupt_pointer p_handler)
+bool verify_vector_enabled(irq_t p_irq, interrupt_pointer p_handler)
 {
-  if (!is_valid_irq_request(m_id)) {
+  if (!is_valid_irq_request(p_irq)) {
     return false;
   }
 
   // Check if the handler match
-  auto irq_handler = vector_table[m_id.vector_index()];
+  auto irq_handler = vector_table[p_irq];
   bool handlers_are_the_same = (irq_handler == p_handler);
 
-  if (!handlers_are_the_same) {
+  if (not handlers_are_the_same) {
     return false;
   }
 
-  if (m_id.default_enabled()) {
+  if (p_irq < 0) {
     return true;
   }
 
-  uint32_t enable_register = nvic->iser[m_id.register_index()];
-  return (enable_register & m_id.enable_mask()) == 0U;
+  uint32_t enable_register = nvic->iser[register_index(p_irq)];
+
+  return (enable_register & (1 << p_irq)) != 0U;
 }
 
-void interrupt::reset()
+void revert_interrupt_vector_table()
 {
-  disable_interrupts();
+  disable_all_interrupts();
 
   // Set all bits in the interrupt clear register to 1s to disable those
   // interrupt vectors.
@@ -145,53 +229,28 @@ void interrupt::reset()
   vector_table = std::span<interrupt_pointer>();
 }
 
-void interrupt::setup(std::span<interrupt_pointer> p_vector_table)
+void initialize_interrupts(std::span<interrupt_pointer> p_vector_table)
 {
-  if (p_vector_table.data() == vector_table.data() &&
-      p_vector_table.size() == vector_table.size()) {
+  // If initialize function has already been called before with this same
+  // buffer, return early.
+  if (is_the_same_vector_buffer(p_vector_table)) {
     return;
   }
 
-  // Assign the statically allocated vector within this scope to the global
-  // vector_table span so that it can be accessed in other
-  // functions. This is valid because the interrupt vector table has static
-  // storage duration and will exist throughout the duration of the
-  // application.
-  vector_table = p_vector_table;
+  setup_default_vector_table(p_vector_table);
 
-  // Copy the "top-of-stack" from the original vector table
-  vector_table[0] = reinterpret_cast<interrupt_pointer*>(
-    get_interrupt_vector_table_address())[0];
+  disable_all_interrupts();
 
-  // Copy the "reset" handler from the original vector table
-  vector_table[1] = reinterpret_cast<interrupt_pointer*>(
-    get_interrupt_vector_table_address())[1];
-
-  // Fill the interrupt handler and vector table with a function that does
-  // nothing functions. Skip the first 2 which are the top of stock and reset
-  // handlers.
-  std::fill(vector_table.begin() + 2, vector_table.end(), &nop);
-
-  disable_interrupts();
+  // Assign the vector within this scope to the global vector_table span so
+  // that it can be accessed in other functions. This is valid because the
+  // interrupt vector table has static storage duration and will exist
+  // throughout the duration of the application.
+  vector_table = p_vector_table.subspan(-core_interrupts);
 
   // Relocate the interrupt vector table the vector buffer. By default this
   // will be set to the address of the start of flash memory for the MCU.
-  set_interrupt_vector_table_address(vector_table.data());
+  set_interrupt_vector_table_address(p_vector_table.data());
 
-  enable_interrupts();
-}
-
-void interrupt::disable_interrupts()
-{
-#if defined(__arm__)
-  asm volatile("cpsid i" : : : "memory");
-#endif
-}
-
-void interrupt::enable_interrupts()
-{
-#if defined(__arm__)
-  asm volatile("cpsie i" : : : "memory");
-#endif
+  enable_all_interrupts();
 }
 }  // namespace hal::cortex_m
