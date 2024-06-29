@@ -70,7 +70,7 @@ void interrupt_test()
     expect(that % top_of_stack_expected == top_of_stack_actual);
     expect(that % reset_handler_expected == reset_handler_actual);
 
-    for (const auto interrupt_function : get_vector_table().subspan(2)) {
+    for (auto const interrupt_function : get_vector_table().subspan(2)) {
       auto default_interrupt_handler_address =
         reinterpret_cast<void*>(&default_interrupt_handler);
       auto function_address = reinterpret_cast<void*>(interrupt_function);
@@ -126,7 +126,7 @@ void interrupt_test()
     should("enable_interrupt(-5)") = [&]() {
       // Setup
       static constexpr irq_t event_number = -5;
-      const auto old_nvic = *nvic;
+      auto const old_nvic = *nvic;
 
       // Exercise
       enable_interrupt(event_number, dummy_handler);
@@ -152,7 +152,7 @@ void interrupt_test()
       initialize_interrupts<my_irq::max>();
 
       static constexpr std::uint16_t event_number = 100;
-      const auto old_nvic = *nvic;
+      auto const old_nvic = *nvic;
 
       // Exercise
       enable_interrupt(event_number, dummy_handler);
@@ -211,7 +211,7 @@ void interrupt_test()
       expect(that % &default_interrupt_handler ==
              reinterpret_cast<void*>(systick));
 
-      for (const auto interrupt_function : get_vector_table()) {
+      for (auto const interrupt_function : get_vector_table()) {
         expect(that % (void*)&default_interrupt_handler ==
                (void*)interrupt_function);
       }
@@ -269,7 +269,7 @@ void interrupt_test()
     should("disable_interrupt(-5)") = [&]() {
       // Setup
       static constexpr std::uint16_t event_number = -5;
-      const auto old_nvic = *nvic;
+      auto const old_nvic = *nvic;
 
       // Exercise
       disable_interrupt(event_number);
@@ -288,7 +288,7 @@ void interrupt_test()
       revert_interrupt_vector_table();
       initialize_interrupts<my_irq::max>();
       static constexpr int event_number = 100;
-      const auto old_nvic = *nvic;
+      auto const old_nvic = *nvic;
 
       // Exercise
       disable_interrupt(event_number);
@@ -347,7 +347,7 @@ void interrupt_test()
       expect(that % &default_interrupt_handler ==
              reinterpret_cast<void*>(systick));
 
-      for (const auto interrupt_function : get_vector_table()) {
+      for (auto const interrupt_function : get_vector_table()) {
         expect(that % (void*)&default_interrupt_handler ==
                (void*)interrupt_function);
       }

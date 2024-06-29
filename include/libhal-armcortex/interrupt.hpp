@@ -234,7 +234,7 @@ void enable_all_interrupts();
  *
  * @return const std::span<interrupt_pointer> - interrupt vector table
  */
-const std::span<interrupt_pointer> get_vector_table();
+std::span<interrupt_pointer> const get_vector_table();
 
 /**
  * @brief Enable interrupt and set the service routine handler.

@@ -22,31 +22,31 @@ namespace hal::cortex_m {
 struct nvic_register_t
 {
   /// Offset: 0x000 (R/W)  Interrupt Set Enable Register
-  std::array<volatile uint32_t, 8U> iser;
+  std::array<uint32_t volatile, 8U> iser;
   /// Reserved 0
   std::array<uint32_t, 24U> reserved0;
   /// Offset: 0x080 (R/W)  Interrupt Clear Enable Register
-  std::array<volatile uint32_t, 8U> icer;
+  std::array<uint32_t volatile, 8U> icer;
   /// Reserved 1
   std::array<uint32_t, 24U> reserved1;
   /// Offset: 0x100 (R/W)  Interrupt Set Pending Register
-  std::array<volatile uint32_t, 8U> ispr;
+  std::array<uint32_t volatile, 8U> ispr;
   /// Reserved 2
   std::array<uint32_t, 24U> reserved2;
   /// Offset: 0x180 (R/W)  Interrupt Clear Pending Register
-  std::array<volatile uint32_t, 8U> icpr;
+  std::array<uint32_t volatile, 8U> icpr;
   /// Reserved 3
   std::array<uint32_t, 24U> reserved3;
   /// Offset: 0x200 (R/W)  Interrupt Active bit Register
-  std::array<volatile uint32_t, 8U> iabr;
+  std::array<uint32_t volatile, 8U> iabr;
   /// Reserved 4
   std::array<uint32_t, 56U> reserved4;
   /// Offset: 0x300 (R/W)  Interrupt Priority Register (8Bit wide)
-  std::array<volatile uint8_t, 240U> ip;
+  std::array<uint8_t volatile, 240U> ip;
   /// Reserved 5
   std::array<uint32_t, 644U> reserved5;
   /// Offset: 0xE00 ( /W)  Software Trigger Interrupt Register
-  volatile uint32_t stir;
+  uint32_t volatile stir;
 };
 
 /// NVIC address

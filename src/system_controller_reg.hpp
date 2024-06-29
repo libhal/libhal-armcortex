@@ -22,47 +22,47 @@ namespace hal::cortex_m {
 struct scb_registers_t
 {
   /// Offset: 0x000 (R/ )  CPUID Base Register
-  const volatile uint32_t cpuid;
+  uint32_t const volatile cpuid;
   /// Offset: 0x004 (R/W)  Interrupt Control and State Register
-  volatile uint32_t icsr;
+  uint32_t volatile icsr;
   /// Offset: 0x008 (R/W)  Vector Table Offset Register
-  volatile intptr_t vtor;
+  intptr_t volatile vtor;
   /// Offset: 0x00C (R/W)  Application Interrupt and Reset Control Register
-  volatile uint32_t aircr;
+  uint32_t volatile aircr;
   /// Offset: 0x010 (R/W)  System Control Register
-  volatile uint32_t scr;
+  uint32_t volatile scr;
   /// Offset: 0x014 (R/W)  Configuration Control Register
-  volatile uint32_t ccr;
+  uint32_t volatile ccr;
   /// Offset: 0x018 (R/W)  System Handlers Priority Registers (4-7, 8-11, 5)
-  std::array<volatile uint8_t, 12U> shp;
+  std::array<uint8_t volatile, 12U> shp;
   /// Offset: 0x024 (R/W)  System Handler Control and State Register
-  volatile uint32_t shcsr;
+  uint32_t volatile shcsr;
   /// Offset: 0x028 (R/W)  Configurable Fault Status Register
-  volatile uint32_t cfsr;
+  uint32_t volatile cfsr;
   /// Offset: 0x02C (R/W)  HardFault Status Register
-  volatile uint32_t hfsr;
+  uint32_t volatile hfsr;
   /// Offset: 0x030 (R/W)  Debug Fault Status Register
-  volatile uint32_t dfsr;
+  uint32_t volatile dfsr;
   /// Offset: 0x034 (R/W)  MemManage Fault Address Register
-  volatile uint32_t mmfar;
+  uint32_t volatile mmfar;
   /// Offset: 0x038 (R/W)  BusFault Address Register
-  volatile uint32_t bfar;
+  uint32_t volatile bfar;
   /// Offset: 0x03C (R/W)  Auxiliary Fault Status Register
-  volatile uint32_t afsr;
+  uint32_t volatile afsr;
   /// Offset: 0x040 (R/ )  Processor Feature Register
-  const std::array<volatile uint32_t, 2U> pfr;
+  std::array<uint32_t volatile, 2U> const pfr;
   /// Offset: 0x048 (R/ )  Debug Feature Register
-  const volatile uint32_t dfr;
+  uint32_t const volatile dfr;
   /// Offset: 0x04C (R/ )  Auxiliary Feature Register
-  const volatile uint32_t adr;
+  uint32_t const volatile adr;
   /// Offset: 0x050 (R/ )  Memory Model Feature Register
-  const std::array<volatile uint32_t, 4U> mmfr;
+  std::array<uint32_t volatile, 4U> const mmfr;
   /// Offset: 0x060 (R/ )  Instruction Set Attributes Register
-  const std::array<volatile uint32_t, 5U> isar;
+  std::array<uint32_t volatile, 5U> const isar;
   /// Reserved 0
   std::array<uint32_t, 5U> reserved0;
   /// Offset: 0x088 (R/W)  Coprocessor Access Control Register
-  volatile uint32_t cpacr;
+  uint32_t volatile cpacr;
 };
 
 /// System control block address

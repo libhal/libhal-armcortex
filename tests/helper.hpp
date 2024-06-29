@@ -23,8 +23,8 @@ public:
     *m_register_pointer = reinterpret_cast<T*>(m_stub.data());
   }
 
-  stub_out_registers& operator=(const stub_out_registers&) = delete;
-  stub_out_registers(const stub_out_registers&) = delete;
+  stub_out_registers& operator=(stub_out_registers const&) = delete;
+  stub_out_registers(stub_out_registers const&) = delete;
   stub_out_registers& operator=(stub_out_registers&& p_other) noexcept
   {
     m_register_pointer = p_other.m_register_pointer;
