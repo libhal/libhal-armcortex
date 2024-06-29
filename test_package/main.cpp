@@ -22,12 +22,12 @@
 void foo()
 {
   // volatile integer used to keep
-  static volatile int a = 0;
+  static int volatile a = 0;
   a = a + 1;
   throw 5;
 }
 
-volatile bool run = false;
+bool volatile run = false;
 
 int main()
 {

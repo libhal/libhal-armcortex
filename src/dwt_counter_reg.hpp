@@ -24,64 +24,64 @@ namespace hal::cortex_m {
 struct dwt_register_t
 {
   /// Offset: 0x000 (R/W)  Control Register
-  volatile uint32_t ctrl;
+  uint32_t volatile ctrl;
   /// Offset: 0x004 (R/W)  Cycle Count Register
-  volatile uint32_t cyccnt;
+  uint32_t volatile cyccnt;
   /// Offset: 0x008 (R/W)  CPI Count Register
-  volatile uint32_t cpicnt;
+  uint32_t volatile cpicnt;
   /// Offset: 0x00C (R/W)  Exception Overhead Count Register
-  volatile uint32_t exccnt;
+  uint32_t volatile exccnt;
   /// Offset: 0x010 (R/W)  Sleep Count Register
-  volatile uint32_t sleepcnt;
+  uint32_t volatile sleepcnt;
   /// Offset: 0x014 (R/W)  LSU Count Register
-  volatile uint32_t lsucnt;
+  uint32_t volatile lsucnt;
   /// Offset: 0x018 (R/W)  Folded-instruction Count Register
-  volatile uint32_t foldcnt;
+  uint32_t volatile foldcnt;
   /// Offset: 0x01C (R/ )  Program Counter Sample Register
-  volatile const uint32_t pcsr;
+  uint32_t const volatile pcsr;
   /// Offset: 0x020 (R/W)  Comparator Register 0
-  volatile uint32_t comp0;
+  uint32_t volatile comp0;
   /// Offset: 0x024 (R/W)  Mask Register 0
-  volatile uint32_t mask0;
+  uint32_t volatile mask0;
   /// Offset: 0x028 (R/W)  Function Register 0
-  volatile uint32_t function0;
+  uint32_t volatile function0;
   /// Reserved 0
   std::array<uint32_t, 1> reserved0;
   /// Offset: 0x030 (R/W)  Comparator Register 1
-  volatile uint32_t comp1;
+  uint32_t volatile comp1;
   /// Offset: 0x034 (R/W)  Mask Register 1
-  volatile uint32_t mask1;
+  uint32_t volatile mask1;
   /// Offset: 0x038 (R/W)  Function Register 1
-  volatile uint32_t function1;
+  uint32_t volatile function1;
   /// Reserved 1
   std::array<uint32_t, 1> reserved1;
   /// Offset: 0x040 (R/W)  Comparator Register 2
-  volatile uint32_t comp2;
+  uint32_t volatile comp2;
   /// Offset: 0x044 (R/W)  Mask Register 2
-  volatile uint32_t mask2;
+  uint32_t volatile mask2;
   /// Offset: 0x048 (R/W)  Function Register 2
-  volatile uint32_t function2;
+  uint32_t volatile function2;
   /// Reserved 2
   std::array<uint32_t, 1> reserved2;
   /// Offset: 0x050 (R/W)  Comparator Register 3
-  volatile uint32_t comp3;
+  uint32_t volatile comp3;
   /// Offset: 0x054 (R/W)  Mask Register 3
-  volatile uint32_t mask3;
+  uint32_t volatile mask3;
   /// Offset: 0x058 (R/W)  Function Register 3
-  volatile uint32_t function3;
+  uint32_t volatile function3;
 };
 
 /// Structure type to access the Core Debug Register (CoreDebug)
 struct core_debug_registers_t
 {
   /// Offset: 0x000 (R/W)  Debug Halting Control and Status Register
-  volatile uint32_t dhcsr;
+  uint32_t volatile dhcsr;
   /// Offset: 0x004 ( /W)  Debug Core Register Selector Register
-  volatile uint32_t dcrsr;
+  uint32_t volatile dcrsr;
   /// Offset: 0x008 (R/W)  Debug Core Register Data Register
-  volatile uint32_t dcrdr;
+  uint32_t volatile dcrdr;
   /// Offset: 0x00C (R/W)  Debug Exception and Monitor Control Register
-  volatile uint32_t demcr;
+  uint32_t volatile demcr;
 };
 
 /**

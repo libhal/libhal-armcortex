@@ -23,15 +23,15 @@ namespace hal::cortex_m {
 struct systick_register_t
 {
   /// Offset: 0x000 (R/W)  SysTick Control and Status Register
-  volatile uint32_t control;
+  uint32_t volatile control;
   /// Offset: 0x004 (R/W)  SysTick Reload Value Register
-  volatile uint32_t reload;
+  uint32_t volatile reload;
   /// Offset: 0x008 (R/W)  SysTick Current Value Register
   /// NOTE: Setting this value to anything will zero it out. Setting this zero
   /// will NOT cause the SysTick interrupt to be fired.
-  volatile uint32_t current_value;
+  uint32_t volatile current_value;
   /// Offset: 0x00C (R/ )  SysTick Calibration Register
-  const volatile uint32_t calib;
+  uint32_t const volatile calib;
 };
 
 /// Namespace containing the bit_mask objects that are used to manipulate the

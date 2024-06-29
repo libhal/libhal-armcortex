@@ -161,7 +161,7 @@ bool interrupt_vector_table_initialized()
          (vector_table.data() + core_interrupts);
 }
 
-const std::span<interrupt_pointer> get_vector_table()
+std::span<interrupt_pointer> const get_vector_table()
 {
   return vector_table;
 }
