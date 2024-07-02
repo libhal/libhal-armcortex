@@ -77,7 +77,7 @@ void systick_timer::register_cpu_frequency(hertz p_frequency,
 systick_timer::~systick_timer()
 {
   stop();
-  disable_interrupt(event_number);
+  disable_interrupt(irq::systick);
 }
 
 bool systick_timer::driver_is_running()
@@ -117,7 +117,7 @@ void systick_timer::driver_schedule(hal::callback<void(void)> p_callback,
 
   // Enable interrupt service routine for SysTick and use this callback as the
   // handler
-  enable_interrupt(event_number, handler.get_handler());
+  enable_interrupt(irq::systick, handler.get_handler());
 
   sys_tick->current_value = 0;
   sys_tick->reload = static_cast<uint32_t>(cycle_count);
