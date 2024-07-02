@@ -58,8 +58,6 @@ static constexpr auto count_flag = hal::bit_mask::from<16>();
 
 /// The address of the sys_tick register
 inline constexpr std::intptr_t systick_address = 0xE000'E010UL;
-/// The IRQ number for the SysTick interrupt vector
-inline constexpr std::uint16_t event_number = 15;
 
 /// @return auto* - Address of the ARM Cortex SysTick peripheral
 inline auto* sys_tick = reinterpret_cast<systick_register_t*>(systick_address);
